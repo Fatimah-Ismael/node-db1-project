@@ -14,13 +14,11 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', md.checkAccountId, async (req, res, next) => {
   // DO YOUR MAGIC
-  res.json(req.account)
-  /*try{
-    const account = await Account.getById(req.params.id)
-    res.json(account)
-  }catch(err){
+  try{
+    res.json(req.account)
+  } catch(err){
     next(err)
-  } */
+  }
 })
 
 router.post('/', 
@@ -29,20 +27,26 @@ router.post('/',
   async (req, res, next) => {
   // DO YOUR MAGIC
   try{
-    const newAccount = await Account.create(req.body)
+    const newAccount = await Account.create({ 
+      name: req.body.name.trim(),
+      budget: req.body.budget
+    })
     res.status(201).json(newAccount)
   }catch(err){
     next(err)
   }
 })
 
-router.put('/:id', md.checkAccountId,
-  md.checkAccountNameUnique,
+router.put('/:id', 
+  md.checkAccountId,
   md.checkAccountPayload,
-  (req, res, next) => {
+  md.checkAccountNameUnique,
+  async (req, res, next) => {
   // DO YOUR MAGIC
   try{
-    res.json('update accounts')
+  const updated = await Account.updateById(req.params.id, req.body)
+  res.json(updated)
+  
   }catch(err){
     next(err)
   }
